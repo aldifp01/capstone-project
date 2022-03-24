@@ -1,0 +1,170 @@
+library(dplyr) 
+library(readr)
+library(tidyr)
+library(ggplot2)
+library(plotly)
+
+driver <- read_csv('drivers.csv')
+d_standing <- read_csv('driver_standings.csv')
+c_standing <- read_csv('constructor_standings.csv')
+constructor <- read_csv('constructors.csv')
+races <- read_csv('races.csv')
+result <- read_csv('results.csv')
+
+#Pada script ini, saya mengambil data dari tahun 2014, dimana saat itu Lewis
+#Hamilton sudah berada di tim Mercedes AMG Petronas dan terus berada di klasemen
+#dengan posisi nomor 1 di setiap akhir musim (kecuali tahun 2016 dan 2021)
+
+#Load data tabular terkait f1 mulai dari tahun 2014 (saat berganti regulasi) sampai 2021
+#Mengecek ID race terakhir setiap tahun
+#2014
+s14 <- races %>% filter(year == 2014)
+s14 <- s14 %>% filter(date == max(date))
+stats <- rbind(s14) #raceId terakhir di tahun 2014= 918
+
+#2015
+s15 <- races %>% filter(year == 2015)
+s15 <- s15 %>% filter(date == max(date))
+stats <- rbind(stats, s15) #raceId terakhir di tahun 2015 = 945
+
+#2016
+s16 <- races %>% filter(year == 2016)
+s16 <- s16 %>% filter(date == max(date))
+stats <- rbind(stats, s16) #raceId terakhir di tahun 2015 = 968
+
+#2017
+s17 <- races %>% filter(year == 2017)
+s17 <- s17 %>% filter(date == max(date))
+stats <- rbind(stats, s17) #raceId terakhir di tahun 2017 = 988
+
+#2018
+s18 <- races %>% filter(year == 2018)
+s18 <- s18 %>% filter(date == max(date))
+stats <- rbind(stats, s18) #raceId terakhir di tahun 2018 = 1009
+
+#2019
+s19 <- races %>% filter(year == 2019)
+s19 <- s19 %>% filter(date == max(date))
+stats <- rbind(stats, s19) #raceId terakhir di tahun 2019 = 1030
+
+#2020
+s20 <- races %>% filter(year == 2020)
+s20 <- s20 %>% filter(date == max(date))
+stats <- rbind(stats, s20) #raceId terakhir di tahun 2020 = 1047
+
+#2021
+s21 <- races %>% filter(year == 2021)
+s21 <- s21 %>% filter(date == max(date))
+stats <- rbind(stats, s21) #raceId terakhir di tahun 2073 = 1073
+
+#Tabel stats kini terdiri dari 8 data dari 8 season (2014-2021) formula satu
+
+#Daftar pembalap dari tim rival yang dalam hal ini saya mengambil ferrari dan juga
+#Red BUll Racing karena mereka bertiga selalu bersaing untuk menjadi nomor 1. Dan juga 
+#rekan hamilton sesama Mercedes. Beberapa anggota Red Bull Racing seperti Pierre Gasly, 
+#Daniel Kvyat dan Alex Albon tidak dimasukan karena mereka sering berganti-ganti
+#tim ke tim saudaranya yaitu Alpha Tauri/Toro Rosso yang kurang kompetitif dan kurang cocok
+#dianggap sebagai rival Mercedes.
+#0. Lewis Hamilton
+#1. Sebastian Vettel
+#2. Kimi Raikkonen
+#3. Nico Rosberg
+#4. Daniel Ricciardo
+#5. Max Verstappen
+#6. Charles Leclerc
+#7. Sergio Perez
+#8. Carlos Sainz
+#9. Valterri Bottas (Analisis perbandingan untuk capstone project ini)
+
+tmp <- driver %>%  filter(forename == "Lewis", surname == "Hamilton")
+driver_analys <- rbind(tmp)
+tmp <- driver %>%  filter(forename == "Sebastian", surname == "Vettel")
+driver_analys <- rbind(driver_analys,tmp)
+tmp <- driver %>%  filter(forename == "Kimi", surname == "Räikkönen")
+driver_analys <- rbind(driver_analys,tmp)
+tmp <- driver %>%  filter(forename == "Nico", surname == "Rosberg")
+driver_analys <- rbind(driver_analys,tmp)
+tmp <- driver %>%  filter(forename == "Daniel", surname == "Ricciardo")
+driver_analys <- rbind(driver_analys,tmp)
+tmp <- driver %>%  filter(forename == "Max", surname == "Verstappen")
+driver_analys <- rbind(driver_analys,tmp)
+tmp <- driver %>%  filter(forename == "Charles", surname == "Leclerc")
+driver_analys <- rbind(driver_analys,tmp)
+tmp <- driver %>%  filter(forename == "Sergio", surname == "Pérez")
+driver_analys <- rbind(driver_analys,tmp)
+tmp <- driver %>%  filter(forename == "Carlos", surname == "Sainz")
+driver_analys <- rbind(driver_analys,tmp)
+tmp <- driver %>% filter(forename == "Valtteri", surname == "Bottas")
+driver_analys <- rbind(driver_analys,tmp)
+
+#Melakukan filter untuk melihat data hasil balap terakhir dari 10 pembalap sebelumnya
+resultCAP <- merge(result, driver, by="driverId", all.x = TRUE) %>% 
+             filter(driverId %in% driver_analys$driverId) %>%
+             filter(raceId %in% stats$raceId)
+
+#Tim yang merupakan rival mercedes adalah Ferrari dan juga Red Bull Racing
+#Maka ketiga tim difilter
+tmp <- constructor %>%  filter(forename == "Lewis", surname == "Hamilton")
+driver_analys <- rbind(tmp)
+tmp <- driver %>%  filter(forename == "Sebastian", surname == "Vettel")
+driver_analys <- rbind(driver_analys,tmp)
+tmp <- driver %>%  filter(forename == "Kimi", surname == "Räikkönen")
+driver_analys <- rbind(driver_analys,tmp)
+
+resultCAP_TEAM <- merge(resultCAP, constructor, by="constructorId", all.x = TRUE) 
+
+
+
+
+
+
+
+
+#######################################
+#Mengurutkan berdasarkan raceId dan point
+klasemen_driver_14_21 <- klasemen_driver_14_21%>% arrange(raceId, desc(points))
+klasemen_tim_14_21 <- klasemen_tim_14_21 %>% arrange(raceId, desc(points),position)
+
+klasemen_driver_line_14 <- ggplot(klasemen_driver_14_21, aes(x=raceId, y=points, color=driverId)) + 
+  geom_line() +
+  theme(legend.position = "none")
+
+klasemen_tim_line_14 <- ggplot(klasemen_tim_14_21, aes(x=raceId, y=points, color=constructorId)) + 
+  geom_line() +
+  theme(legend.position = "none")
+
+ggplotly(klasemenline)
+ggplotly(klasemen_tim_line_14)
+#########################################################################
+#load data hasil balapan 2014 - 2021
+races_14_21 <- races %>% select(-url) %>%filter(year  %in%  (2014:2022))
+result_14_21 <- result %>% select(-positionText) %>% filter(raceId %in% races_14_21$raceId)
+result_14_21 <- result_14_21 %>% arrange(raceId, positionOrder)
+
+#Membuat tabel data balapan (merging semua tabel) dari tahun 2014 - 2021
+racedata_14_21 <- merge(result_14_21, races_14_21, by="raceId", all.x = TRUE)
+racedata_14_21 <- racedata_14_21%>% arrange(raceId, positionOrder)
+#Cek
+#racedata_14_21 %>% select(raceId, year, resultId, driverId, constructorId, position, time.x, rank)
+
+#Merge data dari tabel driver ke racedata_14_21
+racedata_14_21 <- merge(racedata_14_21, driver, by="driverId", all.x = TRUE)
+#racedata_14_21 <- merge(racedata_14_21, d_standing, by="raceId", all.x = TRUE)
+
+#Merge data dari tabel constructor ke racedata_14_21
+racedata_14_21 <- merge(racedata_14_21, constructor, by="constructorId", all.x = TRUE)
+
+#Mengurutkan data berdasarkan id race dan urutan hasil grand prix
+racedata_14_21 <- racedata_14_21%>% arrange(raceId, positionOrder)
+tes <- racedata_14_21 %>% select(year, raceId, name.x, date, driverId, forename, surname, nationality.x, constructorId, name.y, position,positionOrder, grid, points, time.x)
+
+#TES PLOTTING
+target <- c("Tom", "Lynn")
+tes <- tes %>%dplyr::filter(year==2014)
+
+tesline <- ggplot(tes, aes(x=date, y=positionOrder, color=surname)) + 
+  geom_line() +
+  theme(legend.position = "none") +
+  scale_x_date(date_breaks = '3 month', 
+               labels = scales::date_format("%b-%y")) +  # add date format: https://r-lang.com/r-date-format/
+  labs(title = "Cases per Country", # title
