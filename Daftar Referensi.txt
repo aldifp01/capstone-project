@@ -2,9 +2,12 @@ Daftar referensi
 Dataset yg dibuat manual : 
 budget.csv
 -> sumber:https://www.essentiallysports.com/f1-news-what-are-the-budgets-for-f1-teams-including-mercedes-red-bull-ferrari/
-bahrain_gp_2022.csv
+bahraingp2022.csv
 -> sumber:
 https://www.racefans.net/2022/03/20/2022-bahrain-grand-prix-interactive-data-lap-charts-times-and-tyres/
+saudigp2022.csv
+-> sumber:
+https://www.racefans.net/2022/03/28/2022-saudi-arabian-grand-prix-interactive-data-lap-charts-times-and-tyres/
 
 referensi berita (ttg budget cap)
 https://auto.hindustantimes.com/auto/news/formula-1-red-bull-boss-christian-horner-wants-urgent-relook-at-f1-budget-cap-41647062584761.html#:~:text=Formula%201%20currently%20has%20a,to%20%24135%20million%20next%20season.

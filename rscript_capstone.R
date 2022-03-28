@@ -4,6 +4,8 @@ library(tidyr)
 library(ggplot2)
 library(plotly)
 library(tidyverse)
+library('Cairo')
+CairoWin()
 
 driver <- read_csv('./dataset/drivers.csv')
 d_standing <- read_csv('./dataset/driver_standings.csv')
@@ -13,6 +15,7 @@ races <- read_csv('./dataset/races.csv')
 result <- read_csv('./dataset/results.csv')
 budget <- read_csv('./dataset/budget.csv')
 bahrain2022 <- read_csv('./dataset/bahraingp2022.csv')
+saudi2022 <- read_csv('./dataset/saudigp2022.csv')
 
 #Pada script ini, saya mengambil data dari tahun 2014, dimana saat itu Lewis
 #Hamilton sudah berada di tim Mercedes AMG Petronas dan terus berada di klasemen
@@ -177,15 +180,14 @@ resultCAP <- resultCAP%>%arrange(raceId, positionOrder)
 resultCAP <- resultCAP %>% select(Year, Classement, Full_Name, Nationality, Driver_Number, Constructor, Finish, Time,
                                   Points, Total_Wins)
 
-driver_graph <- ggplot(resultCAP, aes(x=Year, y=Points, color=Full_Name)) + 
-  geom_line() + geom_point() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5),
-                                     panel.background = element_rect(fill = "white",
-                                                                     colour = "grey",
-                                                                     size = 0.5, linetype = "solid"),
-                                     panel.grid.major = element_line(size = 0.5, linetype = 'solid',
-                                                                     colour = "grey"),
-                                     panel.grid.minor = element_line(size = 0.25, linetype = 'solid',
-                                                                     colour = "grey")) +
+driver_graph <- ggplot(resultCAP, aes(x=Year, y=Points, color=Full_Name),size=1,se=FALSE) + 
+  geom_line() + geom_point() + theme(axis.text.x = element_text(angle = 45, vjust = 0.5,size=7),
+                                     axis.text.y = element_text(vjust = 0.5,size=7),
+                                     text=element_text(size=10),
+                                     legend.text = element_text(colour="black", size=10, 
+                                                                face="bold"),
+                                     legend.key = element_rect(colour = "transparent", fill = "white"),
+                                     legend.key.size = unit(0.5, "cm")) +
   scale_color_manual(name = "Full_Name",
                      values = c("Lewis Hamilton" = "deepskyblue1",
                                 "Sebastian Vettel" = "chocolate4",
@@ -200,8 +202,7 @@ driver_graph <- ggplot(resultCAP, aes(x=Year, y=Points, color=Full_Name)) +
                                 "Valtteri Bottas" = "cyan1")) +
   scale_x_continuous(breaks=seq(2010, 2021, 1))
 ggplotly(driver_graph)
-ggsave("contendernrival_plot.png",width = 4752, height = 1280, units = "px")
-
+ggsave("contendernrival_plot.png",width = 1828,dpi = 200, type = 'cairo', height = 700, units = "px")
 
 ##############################################################################
 ##                          GRAFIK DARI CONSTRUCTOR                         ##
@@ -242,22 +243,22 @@ resultCAP_TEAM <- resultCAP_TEAM%>%arrange(raceId, positionText)
 resultCAP_TEAM <- resultCAP_TEAM %>% select(Year,Classement,Constructor,Total_Wins,Points)
 
 constructor_graph <- ggplot(resultCAP_TEAM, aes(x=Year, y=Points, color=Constructor)) + 
-  geom_line() + geom_point() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5),
-                                     panel.background = element_rect(fill = "white",
-                                                                     colour = "grey",
-                                                                     size = 0.5, linetype = "solid"),
-                                     panel.grid.major = element_line(size = 0.5, linetype = 'solid',
-                                                                     colour = "grey"),
-                                     panel.grid.minor = element_line(size = 0.25, linetype = 'solid',
-                                                                     colour = "grey")) +
+  geom_line() + geom_point() + theme(axis.text.x = element_text(angle = 45, vjust = 0.5,size=6),
+                                     axis.text.y = element_text(vjust = 0.5,size=6),
+                                     text=element_text(size=7),
+                                     legend.text = element_text(colour="black", size=8, 
+                                                                face="bold"),
+                                     legend.key = element_rect(colour = "transparent", fill = "white"),
+                                     legend.key.size = unit(0.4, "cm")) +
   scale_color_manual(name = "Constructor",
-                     values = c("Ferrari" = "red",
-                                "Mercedes" = "deepskyblue1",
-                                "McLaren" = "darkorange",
-                                "Red Bull" ="navyblue")) +
+                     values = c("Ferrari" = "#DC0000",
+                                "Mercedes" = "#00D2BE",
+                                "McLaren" = "#FF8700",
+                                "Red Bull" ="#0600EF")) +
+  ggtitle("Constructor Championship")+
   scale_x_continuous(breaks=seq(2010, 2021, 1))
 ggplotly(constructor_graph)
-ggsave("team_plot.png",width = 1200, height = 740, units = "px")
+ggsave("team_plot.png",width = 914, dpi = 200, type = 'cairo',height = 740, units = "px")
 
 ##############################################################################
 ##                          GRAFIK DARI TEAM BUDGET                         ##
@@ -265,30 +266,54 @@ ggsave("team_plot.png",width = 1200, height = 740, units = "px")
 teamBudget <- merge(budget,constructor, by="constructorId", all.x = TRUE)
 teamBudget <- teamBudget %>% select(year, constructorId, name, nationality, budget)
 budget_graph <- ggplot(teamBudget, aes(x=year, y=budget, color=name)) + 
-  geom_line() + geom_point() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5),
-                                     panel.background = element_rect(fill = "white",
-                                                                     colour = "grey",
-                                                                     size = 0.5, linetype = "solid"),
-                                     panel.grid.major = element_line(size = 0.5, linetype = 'solid',
-                                                                     colour = "grey"),
-                                     panel.grid.minor = element_line(size = 0.25, linetype = 'solid',
-                                                                     colour = "grey")) +
+  geom_line() + geom_point() + theme(axis.text.x = element_text(angle = 45, vjust = 0.5,size=6),
+                                     axis.text.y = element_text(vjust = 0.5,size=6),
+                                     text=element_text(size=7),
+                                     legend.text = element_text(colour="black", size=8, 
+                                                                face="bold"),
+                                     legend.key = element_rect(colour = "transparent", fill = "white"),
+                                     legend.key.size = unit(0.4, "cm")) +
   scale_color_manual(name = "name",
                      values = c("Ferrari" = "red",
                                 "Mercedes" = "deepskyblue1",
                                 "McLaren" = "darkorange",
                                 "Red Bull" ="navyblue")) +
-  
+  ggtitle("Team Budget")+
   scale_x_continuous(breaks=seq(2010, 2021, 1))
 ggplotly(budget_graph)
-ggsave("budget_plot.png",width = 1200, height = 740, units = "px")
+ggsave("budget_plot.png",width = 914, height = 740,dpi = 200, type = 'cairo', units = "px")
+
+##############################################################################
+##                       BAR CHART ENGINE TEAM 2022                         ##
+##############################################################################
+barteam <- bahrain2022%>%count(bahrain2022$Engine)
+barteam <- rename(barteam,Engine = `bahrain2022$Engine`)
+barteam <- rename(barteam,count = n)
+barteam$count <- as.numeric(as.character(barteam$count)) / 2
+
+barplotEngine<-ggplot(data=barteam, aes(x=Engine, y=count,fill=Engine)) +
+  geom_bar(stat="identity")+theme(axis.text.x = element_text(angle = 45, vjust = 0.5,size=7),
+                                  axis.text.y = element_text(vjust = 0.5,size=7),
+                                  text=element_text(size=10),
+                                  legend.text = element_text(colour="black", size=10, 
+                                                             face="bold"),
+                                  legend.key = element_rect(colour = "transparent", fill = "white"),
+                                  legend.key.size = unit(0.5, "cm"))+
+  ggtitle("Power Unit distribution")+
+  scale_fill_manual(name = "Engine",
+                      values = c("Ferrari" = "red",
+                               "Mercedes" = "cyan",
+                               "RB PowerTrain" = "mediumblue",
+                               "Renault" ="yellow"))
+ggplotly(barplotEngine)
+ggsave("barplotengine.png",width = 914, height = 740,dpi = 200, type = 'cairo', units = "px")
 
 ##############################################################################
 ##                           GRAFIK BAHRAIN GP 2022                         ##
 ##############################################################################
 bahraingp2022 <- bahrain2022%>%pivot_longer(c('0':'57'),
-                    names_to = "laps", values_to =
-                    "position")
+                                            names_to = "laps", values_to =
+                                              "position")
 bahraingp2022$laps <- as.integer(bahraingp2022$laps)
 str(bahraingp2022)
 
@@ -296,56 +321,91 @@ bahraingp2022 <- bahraingp2022 %>% arrange(Name,laps)
 
 
 bahrain_plot <- ggplot(bahraingp2022, aes(x=laps, y=position, color=Name)) + 
-  geom_line() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5),
-                      panel.background = element_rect(fill = "white",
-                                                      colour = "grey",
-                                                      size = 0.5, linetype = "solid"),
-                      panel.grid.major = element_line(size = 0.5, linetype = 'solid',
-                                                      colour = "grey"),
-                      panel.grid.minor = element_line(size = 0.25, linetype = 'solid',
-                                                      colour = "grey"),legend.position = "none")+
+  geom_line() + theme(axis.text.x = element_text(angle = 45, vjust = 0.5,size=7),
+                      axis.text.y = element_text(vjust = 0.5,size=7),
+                      text=element_text(size=10),legend.position = "none",
+                      legend.text = element_text(colour="black", size=10, 
+                                                 face="bold"),
+                      legend.key = element_rect(colour = "transparent", fill = "white"),
+                      legend.key.size = unit(0.5, "cm"))+
   scale_x_continuous(breaks=seq(0,57,1))+
+  scale_y_continuous(breaks=seq(1,20,1))+
+  ggtitle("Bahrain GP 2022 (warna berdasarkan PU)")+
   scale_color_manual(name = "Name",
-                   values = c("Lewis Hamilton" = "cyan",
-                              "George Russel" = "cyan",
-                              "Charles Leclerc" = "red",
-                              "Carlos Sainz" = "red",
-                              "Max Verstappen" = "blue",
-                              "Sergio Perez" = "blue",
-                              "Pierre Gasly" = "blue",
-                              "Yuki Tsunoda" = "blue",
-                              "Zhou Guanyu" = "red",
-                              "Valtteri Bottas" = "red",
-                              "Kevin Magnussen" = "red",
-                              "Mick Schumacher" = "red",
-                              "Alexander Albon" = "cyan",
-                              "Nicholas Latifi" = "cyan",
-                              "Nico Hulkenberg" = "cyan",
-                              "Lance Stroll" = "cyan",
-                              "Esteban Ocon" = "yellow",
-                              "Fernando Alonso" = "yellow",
-                              "Lando Norris" = "cyan",
-                              "Daniel Ricciardo" = "cyan"
-                              ))
+                     values = c("Lewis Hamilton" = "cyan",
+                                "George Russel" = "cyan",
+                                "Charles Leclerc" = "red",
+                                "Carlos Sainz" = "red",
+                                "Max Verstappen" = "blue",
+                                "Sergio Perez" = "blue",
+                                "Pierre Gasly" = "blue",
+                                "Yuki Tsunoda" = "blue",
+                                "Zhou Guanyu" = "red",
+                                "Valtteri Bottas" = "red",
+                                "Kevin Magnussen" = "red",
+                                "Mick Schumacher" = "red",
+                                "Alexander Albon" = "cyan",
+                                "Nicholas Latifi" = "cyan",
+                                "Nico Hulkenberg" = "cyan",
+                                "Lance Stroll" = "cyan",
+                                "Esteban Ocon" = "yellow",
+                                "Fernando Alonso" = "yellow",
+                                "Lando Norris" = "cyan",
+                                "Daniel Ricciardo" = "cyan"
+                     ))
 ##PEWARNAAN DIDASARI PADA ENGINE YANG DIGUNAKAN
 ggplotly(bahrain_plot)
-ggsave("bahrain_plot2.png",width = 2840, height = 1080, units = "px")
+ggsave("bahrain_plot.png",width = 1910,dpi = 200, height = 700, type = 'cairo',units = "px")
 
 ##############################################################################
-##                       PIE CHART ENGINE TEAM 2022                         ##
+##                           GRAFIK SAUDI GP 2022                          ##
 ##############################################################################
-barteam <- bahrain2022%>%count(bahrain2022$Engine)
-barteam <- rename(barteam,Engine = `bahrain2022$Engine`)
-barteam <- rename(barteam,count = n)
 
-barplotEngine<-ggplot(data=barteam, aes(x=Engine, y=count,fill=Engine)) +
-  geom_bar(stat="identity")+
-  scale_fill_manual(name = "Engine",
-                      values = c("Ferrari" = "red",
-                               "Mercedes" = "cyan",
-                               "RB PowerTrain" = "mediumblue",
-                               "Renault" ="yellow"))
-ggplotly(barplotEngine)
+saudigp2022 <- saudi2022%>%pivot_longer(c('0':'50'),
+                                            names_to = "laps", values_to =
+                                              "position")
+saudigp2022$laps <- as.integer(saudigp2022$laps)
+str(saudigp2022)
+
+saudigp2022 <- saudigp2022 %>% arrange(Name,laps)
+
+
+saudi_plot <- ggplot(saudigp2022, aes(x=laps, y=position, color=Name)) + 
+  geom_line() + theme(axis.text.x = element_text(angle = 45, vjust = 0.5,size=7),
+                      axis.text.y = element_text(vjust = 0.5,size=7),
+                      text=element_text(size=10),legend.position = "none",
+                      legend.text = element_text(colour="black", size=10, 
+                                                 face="bold"),
+                      legend.key = element_rect(colour = "transparent", fill = "white"),
+                      legend.key.size = unit(0.5, "cm"))+
+  scale_x_continuous(breaks=seq(0,50,1))+
+  scale_y_continuous(breaks=seq(1,20,1))+
+  ggtitle("Saudi Arabia GP 2022 (warna berdasarkan PU)")+
+  scale_color_manual(name = "Name",
+                     values = c("Lewis Hamilton" = "cyan",
+                                "George Russel" = "cyan",
+                                "Charles Leclerc" = "red",
+                                "Carlos Sainz" = "red",
+                                "Max Verstappen" = "blue",
+                                "Sergio Perez" = "blue",
+                                "Pierre Gasly" = "blue",
+                                "Yuki Tsunoda" = "blue",
+                                "Zhou Guanyu" = "red",
+                                "Valtteri Bottas" = "red",
+                                "Kevin Magnussen" = "red",
+                                "Mick Schumacher" = "red",
+                                "Alexander Albon" = "cyan",
+                                "Nicholas Latifi" = "cyan",
+                                "Nico Hulkenberg" = "cyan",
+                                "Lance Stroll" = "cyan",
+                                "Esteban Ocon" = "yellow",
+                                "Fernando Alonso" = "yellow",
+                                "Lando Norris" = "cyan",
+                                "Daniel Ricciardo" = "cyan"
+                     ))
+##PEWARNAAN DIDASARI PADA ENGINE YANG DIGUNAKAN
+ggplotly(saudi_plot)
+ggsave("saudi_plot.png",width = 1910,dpi = 200, height = 700, type = 'cairo',units = "px")
 
 ##############################################################################
 ##############################################################################
