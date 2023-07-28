@@ -5,6 +5,19 @@ Repository ini adalah repository yang berisikan Capstone Project saya untuk Tetr
 ## Dashboard 
 ![dashboard](https://github.com/aldifp01/capstone-project/blob/main/CAPSTONE.png)
 
+Dari data yang diperoleh, terlihat masing-masing waktu regulasi didominasi oleh salah satu tim seperti tahun 2010 hingga 2013 didominasi oleh Red Bull Racing. Kemudian, terjadi perubahan regulasi pada tahun 2014 dimana Mercedes mendominasi hingga tahun 2021. Dari segi pembalapnya sendiri juga didominasi oleh pembalap terbaik dari salah satu tim tersebut. Misalnya Sebastian Vettel menjadi juara dunia berturut-turut pada tahun 2010 hingga 2013. Kemudian diikuti oleh Lewis Hamilton yang menjadi juara dunia beruntun juga mulai dari tahun 2014 hingga tahun 2020 (kecuali tahun 2016 dimana dimenangkan oleh Nico Rosberg). Dominasi Mercedes mulai berhenti ketika Max Verstappen menjadi juara dunia Formula 1 pada tahun 2021 yang selisih pointnya sangat tipis dengan Lewis Hamilton. 
+
+Pada tahun 2022 terjadi perubahan regulasi layaknya tahun-tahun sebelumnya. Terdapat beberapa perubahan utama yaitu:
+1. Power Unit dibekukan hingga regulasi tahun berikutnya yakni tahun 2026
+2. Terdapat dua bagian Pre-Season testing
+3. Aturan pembuatan Aerodinamik yang semakin ketat
+4. Budget Cap untuk semua tim, dimana dana yang boleh dikeluarkan hanya mencapai $140.000.000 saja
+5. Format race week baru, dimana terdapat sprint race untuk beberapa sirkuit
+6. Latihan wajib untuk rookie pada free practice
+7. Terdapat regulasi ban baru
+
+Berdasarkan data tim pada tahun 2022, supplier mesin atau Power Unit didominasi oleh Mercedes yang mencapai 4 tim, diikuti oleh Ferrari 3 tim, RBPT 3 tim, dan Renault 1 tim. Kemudian, berdasarkan hasil dua balapan pertama diperoleh hasil yang sangat memprihatinkan bagi Mercedes. Dari keempat tim yang menggunakan mesin Mercedes, tiga tim diantaranya hanya mampu berada di posisi juru kunci alias enam posisi terakhir. Sedangkan mesin Ferrari dan RBPT berada di top 4. Sehingga dapat diketahui bahwa mesin Mercedes sudah tidak mendominasi track balapan lagi setidaknya hingga tahun 2026, ditambah lagi konsep mobil Mercedes yang menekankan untuk tidak menggunakan pod atau zero-pod yang mana memiliki aerodinamik yang jauh kalah dibandingkan dengan kompetitornya.
+
 ## Library Yang Digunakan
 - dplyr
 - tidyr
